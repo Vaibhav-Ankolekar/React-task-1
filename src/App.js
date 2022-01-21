@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import "./App.css";
 import Header from "./components/Header";
 import TaskList from "./components/TaskList";
@@ -13,34 +14,18 @@ const App = () => {
 	}, []);
 
 	const getTodos = async () => {
-		const response = await fetch(
-			"https://jsonplaceholder.typicode.com/todos",
-			{
-				method: "GET",
-			}
-		);
-
-		const data = await response.json();
-
-		console.log(data[0]);
-
+		const { data } = await axios.get("https://jsonplaceholder.typicode.com/todos");
 		setTodos(data);
 	};
 
 	const toggleComplete = async (task) => {
 		task.completed = !task.completed;
-		const response = await fetch(
-			`https://jsonplaceholder.typicode.com/posts/${task.id}`,
-			{
-				method: "PUT",
-				body: JSON.stringify(task),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
 
-		const data = await response.json();
+		let { data } = await axios.put(`https://jsonplaceholder.typicode.com/posts/${task.id}`, {
+			body: JSON.stringify(task),
+		});
+
+		data = JSON.parse(data.body);
 		setTodos((todos) =>
 			todos.map((todo) => {
 				if (todo.id === data.id) {
@@ -53,13 +38,7 @@ const App = () => {
 	};
 
 	const deleteTask = async (task) => {
-		const response = await fetch(
-			`https://jsonplaceholder.typicode.com/posts/${task.id}`,
-			{
-				method: "DELETE",
-			}
-		);
-		const data = await response.json();
+		await axios.delete(`https://jsonplaceholder.typicode.com/posts/${task.id}`);
 		setTodos((todos) => todos.filter((todo) => todo.id !== task.id));
 	};
 
@@ -70,15 +49,11 @@ const App = () => {
 			completed: false
 		};
 
-		const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-			method: 'POST',
+		let { data } = await axios.post('https://jsonplaceholder.typicode.com/posts', {
 			body: JSON.stringify(task),
-			headers: {
-				'Content-Type': 'application/json',
-			},
 		});
 
-		const data = await response.json();
+		data = JSON.parse(data.body);
 
 		setTodos([...todos, data]);
 	};

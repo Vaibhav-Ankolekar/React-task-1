@@ -15,7 +15,10 @@ const TodoList = (props) => {
                     />
                 ))
             ) : (
-                <p className="todo text">You currently have no tasks</p>
+                <p className="todo text">
+                    There are no task added to list. To add new Task enter task
+                    in textbox and click Add.
+                </p>
             )}
         </div>
     );
